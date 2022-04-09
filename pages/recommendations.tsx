@@ -73,8 +73,11 @@ const Recommendations: FC<RecommendationsData> = ({ data }) => (
   </Layout>
 );
 
-export const getStaticProps: GetStaticProps = async () => {
-  const { data } = (await getPage('recommendations')) as PrismicDocumentWithUID;
+export const getStaticProps: GetStaticProps = async ({ previewData }) => {
+  const { data } = (await getPage(
+    'recommendations',
+    previewData
+  )) as PrismicDocumentWithUID;
 
   return {
     props: {

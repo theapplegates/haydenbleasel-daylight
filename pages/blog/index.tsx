@@ -25,6 +25,13 @@ type BlogProps = {
   workPosts: Post[];
 };
 
+type PostProps = PrismicDocumentWithUID<{
+  title: KeyTextField;
+  description: KeyTextField;
+  customPublishDate: DateField;
+  slices: SliceZone;
+}>;
+
 const PostLink: FC<Post> = ({ id, title, date, link }) => {
   const linkProps = link.startsWith('/')
     ? {}
@@ -102,50 +109,30 @@ const Blog: FC<BlogProps> = ({
   );
 };
 
-export const getStaticProps: GetStaticProps = async () => {
+const createPreviewLink = (post: PostProps): Post => ({
+  id: post.uid,
+  title: `${post.data.title ?? ''} — ${post.data.description ?? ''}`,
+  date: post.data.customPublishDate
+    ? parse(post.data.customPublishDate, 'yyyy-MM-dd', new Date()).toISOString()
+    : post.first_publication_date,
+  link: `/blog/${post.uid}`,
+});
+
+export const getStaticProps: GetStaticProps = async ({ previewData }) => {
   const mediumPosts = await getMediumPosts();
   const devPosts = await getDevPosts();
-  const caseStudies = (await getPages('case-study')) as PrismicDocumentWithUID<{
-    title: KeyTextField;
-    description: KeyTextField;
-    customPublishDate: DateField;
-    slices: SliceZone;
-  }>[];
-  const workPosts = (await getPages('work-post')) as PrismicDocumentWithUID<{
-    title: KeyTextField;
-    description: KeyTextField;
-    customPublishDate: DateField;
-    slices: SliceZone;
-  }>[];
+  const caseStudies = (await getPages(
+    'case-study',
+    previewData
+  )) as PostProps[];
+  const workPosts = (await getPages('work-post', previewData)) as PostProps[];
 
   return {
     props: {
       mediumPosts,
       devPosts,
-      caseStudies: caseStudies.map((post) => ({
-        id: post.uid,
-        title: `${post.data.title ?? ''} — ${post.data.description ?? ''}`,
-        date: post.data.customPublishDate
-          ? parse(
-              post.data.customPublishDate,
-              'yyyy-MM-dd',
-              new Date()
-            ).toISOString()
-          : post.first_publication_date,
-        link: `/blog/${post.uid}`,
-      })),
-      workPosts: workPosts.map((post) => ({
-        id: post.uid,
-        title: `${post.data.title ?? ''} — ${post.data.description ?? ''}`,
-        date: post.data.customPublishDate
-          ? parse(
-              post.data.customPublishDate,
-              'yyyy-MM-dd',
-              new Date()
-            ).toISOString()
-          : post.first_publication_date,
-        link: `/blog/${post.uid}`,
-      })),
+      caseStudies: caseStudies.map(createPreviewLink),
+      workPosts: workPosts.map(createPreviewLink),
     },
   };
 };

@@ -4,7 +4,8 @@ import Head from 'next/head';
 import { Toaster } from 'react-hot-toast';
 import { PrismicProvider } from '@prismicio/react';
 import { SocialProfileJsonLd } from 'next-seo';
-import { client, linkResolver } from '../utils/prismic';
+import { PrismicPreview } from '@prismicio/next';
+import { getClient, linkResolver } from '../utils/prismic';
 import '../styles/globals.css';
 import '../styles/dev.css';
 import CommandBar from '../components/commandbar';
@@ -108,10 +109,14 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
         linkResolver={linkResolver}
         internalLinkComponent={InternalLinkComponent}
         externalLinkComponent={ExternalLinkComponent}
-        client={client}
+        client={getClient()}
         richTextComponents={richTextComponents}
       >
-        <Component {...pageProps} />
+        <PrismicPreview
+          repositoryName={process.env.NEXT_PUBLIC_PRISMIC_ENDPOINT ?? 'loading'}
+        >
+          <Component {...pageProps} />
+        </PrismicPreview>
       </PrismicProvider>
       <Menu />
       <Toaster

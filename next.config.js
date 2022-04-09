@@ -18,6 +18,7 @@ const nextConfig = {
       'prismic-io.s3.amazonaws.com',
       'cdn.dribbble.com',
       's3-alpha-sig.figma.com',
+      'images.unsplash.com',
     ],
     dangerouslyAllowSVG: true,
   },

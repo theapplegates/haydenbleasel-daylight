@@ -15,7 +15,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { ArticleJsonLd } from 'next-seo';
 import Layout from '../../components/layout';
-import { getPage, getPages } from '../../utils/prismic';
+import { getPages, getTemplate } from '../../utils/prismic';
 import { components } from '../../slices';
 import Video from '../../components/video';
 
@@ -98,12 +98,15 @@ const WorkPost: FC<PostProps> = ({
   );
 };
 
-export const getStaticProps: GetStaticProps = async ({ params }) => {
+export const getStaticProps: GetStaticProps = async ({
+  params,
+  previewData,
+}) => {
   const uid = params?.post as string;
 
   const posts = await Promise.all([
-    getPage(uid, 'case-study'),
-    getPage(uid, 'work-post'),
+    getTemplate(uid, 'case-study', previewData),
+    getTemplate(uid, 'work-post', previewData),
   ]);
 
   const post = posts.filter(Boolean)[0] as PrismicDocumentWithUID<

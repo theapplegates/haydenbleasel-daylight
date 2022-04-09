@@ -11,7 +11,7 @@ import { SliceZone } from '@prismicio/react';
 import { format, parseISO } from 'date-fns';
 import Image from 'next/image';
 import Layout from '../components/layout';
-import { getPage, getPages } from '../utils/prismic';
+import { getPages, getTemplate } from '../utils/prismic';
 import { components } from '../slices';
 import Video from '../components/video';
 
@@ -64,10 +64,14 @@ const LandingPage: FC<LandingPageProps> = ({ data, last_publication_date }) => (
   </Layout>
 );
 
-export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const { data, last_publication_date } = (await getPage(
+export const getStaticProps: GetStaticProps = async ({
+  params,
+  previewData,
+}) => {
+  const { data, last_publication_date } = (await getTemplate(
     params?.uid as string,
-    'landing-page'
+    'landing-page',
+    previewData
   )) as PrismicDocumentWithUID;
 
   return {

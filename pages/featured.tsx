@@ -82,8 +82,11 @@ const Featured: FC<FeaturesData> = ({ data }) => (
   </Layout>
 );
 
-export const getStaticProps: GetStaticProps = async () => {
-  const { data } = (await getPage('featured')) as PrismicDocumentWithUID;
+export const getStaticProps: GetStaticProps = async ({ previewData }) => {
+  const { data } = (await getPage(
+    'featured',
+    previewData
+  )) as PrismicDocumentWithUID;
 
   return {
     props: {
